@@ -1,0 +1,25 @@
+var query = from order in context.Orders
+            join customer in context.Customers
+            on order.CustomerId equals customer.CustomerId
+            select new
+            {
+                order.OrderId,
+                customer.CustomerName,
+                order.OrderDate
+            };
+
+var results = query.ToList();
+
+var query = from customer in context.Customers
+            join order in context.Orders
+            on customer.CustomerId equals order.CustomerId into customerOrders
+            from co in customerOrders.DefaultIfEmpty()
+            select new
+            {
+                customer.CustomerId,
+                customer.CustomerName,
+                OrderId = (co != null) ? co.OrderId : (int?)null,
+                OrderDate = (co != null) ? co.OrderDate : (DateTime?)null
+            };
+
+var results = query.ToList();
